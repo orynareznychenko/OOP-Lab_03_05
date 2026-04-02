@@ -1,31 +1,32 @@
-#ifndef RECEIPT_H
-#define RECEIPT_H
-
+#pragma once
 #include "Array.h"
-#include "Goods.h"
 #include <string>
 
-class Receipt : public Array<Goods> {
+using namespace std;
+
+class Receipt : public Array {
 private:
-    std::string receiptNumber;
-    std::string dateTime;
+    string receiptNumber;
+    string date;
+    string time;
 
 public:
-    Receipt(std::string number = "000000", std::string dt = "01.01.1970 00:00");
+    Receipt();
+    Receipt(string num, string d, string t);
+    Receipt(string num, string d, string t, int size, const Goods& initVal);
 
-    void setReceiptNumber(const std::string& number);
-    void setDateTime(const std::string& dt);
+    void setReceiptNumber(string num);
+    void setDate(string d);
+    void setTime(string t);
 
     void addGoods(const Goods& g);
-    void removeGoods(const std::string& code);
-    void modifyGoods(const std::string& code, const Goods& newGoods);
-    Goods searchGoods(const std::string& code) const;
-    double getTotalSum() const;
+    void changeGoods(int index, const Goods& g);
+    void deleteGoods(int index);
+    Goods searchByCode(string c) const;
+    double calculateTotalSum() const;
 
-    operator std::string() const;
+    Receipt& operator=(const Receipt& other);
 
-    friend std::istream& operator>>(std::istream& is, Receipt& r);
-    friend std::ostream& operator<<(std::ostream& os, const Receipt& r);
+    friend istream& operator>>(istream& in, Receipt& r);
+    friend ostream& operator<<(ostream& out, const Receipt& r);
 };
-
-#endif 

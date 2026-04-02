@@ -30,6 +30,9 @@
     <ClCompile Include="..\ООП_РІ-13_Резниченко_ЛР-3.5\ООП_РІ-13_Резниченко_ЛР-3.5.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\ООП_РІ-13_Резниченко_ЛР-3.5\Array.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">

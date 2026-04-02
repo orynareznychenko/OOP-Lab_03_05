@@ -14,20 +14,28 @@ namespace UnitTest1
 		
 		TEST_METHOD(TestMethod1)
 		{
-            std::string expectedCode = "T001";
-            std::string expectedName = "Test_Apple";
-            double price = 15.50;
-            int quantity = 4;
-            double expectedSum = 62.00; 
+            Goods g1("001", "Apple", 15.5, 2);
+            Goods g2("002", "Bread", 20.0, 1);
 
-            Goods testItem(expectedCode, expectedName, price, quantity);
+            Receipt r("12345", "02.04.2026", "15:30");
 
-            Assert::AreEqual(expectedCode, testItem.getCode(), L"Код товару не співпадає!");
-            Assert::AreEqual(expectedName, testItem.getName(), L"Назва товару не співпадає!");
-            Assert::AreEqual(price, testItem.getPrice(), L"Ціна товару не співпадає!");
-            Assert::AreEqual(quantity, testItem.getQuantity(), L"Кількість товару не співпадає!");
+            r.addGoods(g1);
+            r.addGoods(g2);
 
-            Assert::AreEqual(expectedSum, testItem.calculateSum(), L"Сума обчислена неправильно!");
-		}
+            double expectedTotal = 51.0;
+            Assert::AreEqual(expectedTotal, r.calculateTotalSum(), 0.001);
+
+            Goods found = r.searchByCode("001");
+            Assert::AreEqual(string("Apple"), found.getName());
+            Assert::AreEqual(15.5, found.getPrice(), 0.001);
+
+            r.deleteGoods(0);
+
+            double expectedTotalAfterDelete = 20.0;
+            Assert::AreEqual(expectedTotalAfterDelete, r.calculateTotalSum(), 0.001);
+
+            Goods remaining = r.searchByCode("002");
+            Assert::AreEqual(string("Bread"), remaining.getName());
+        }
 	};
 }

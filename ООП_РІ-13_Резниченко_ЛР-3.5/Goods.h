@@ -1,34 +1,36 @@
-#ifndef GOODS_H
-#define GOODS_H
-
+#pragma once
 #include <string>
 #include <iostream>
 
+using namespace std;
+
 class Goods {
 private:
-    std::string code;
-    std::string name;
+    string code;
+    string name;
     double price;
     int quantity;
 
 public:
-    Goods(std::string c = "0000", std::string n = "Unknown", double p = 0.01, int q = 0);
+    Goods();
+    Goods(string c, string n, double p, int q);
 
-    void setCode(const std::string& c);
-    void setName(const std::string& n);
+    void setCode(string c);
+    string getCode() const;
+
+    void setName(string n);
+    string getName() const;
+
     void setPrice(double p);
-    void setQuantity(int q);
-
-    std::string getCode() const;
-    std::string getName() const;
     double getPrice() const;
+
+    void setQuantity(int q);
     int getQuantity() const;
 
-    double calculateSum() const;
-    operator std::string() const;
+    double calculateTotal() const;
 
-    friend std::istream& operator>>(std::istream& is, Goods& g);
-    friend std::ostream& operator<<(std::ostream& os, const Goods& g);
+    operator string() const;
+
+    friend istream& operator>>(istream& in, Goods& g);
+    friend ostream& operator<<(ostream& out, const Goods& g);
 };
-
-#endif 

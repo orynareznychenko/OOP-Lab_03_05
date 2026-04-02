@@ -156,6 +156,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\ООП_РІ-13_Резниченко_ЛР-3.5\Array.cpp" />
     <ClCompile Include="..\ООП_РІ-13_Резниченко_ЛР-3.5\Goods.cpp" />
     <ClCompile Include="..\ООП_РІ-13_Резниченко_ЛР-3.5\Receipt.cpp" />
     <ClCompile Include="..\ООП_РІ-13_Резниченко_ЛР-3.5\ООП_РІ-13_Резниченко_ЛР-3.5.cpp" />

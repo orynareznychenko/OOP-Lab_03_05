@@ -1,124 +1,121 @@
 #include "Receipt.h"
-#include <sstream>
+#include <iostream>
 #include <cstdlib>
 
 using namespace std;
 
-Receipt::Receipt(string number, string dt) : Array<Goods>(0), receiptNumber(number), dateTime(dt) {}
+Receipt::Receipt() : Array(), receiptNumber(""), date(""), time("") {}
 
-void Receipt::setReceiptNumber(const string& number) {
-    if (number.empty()) {
-        cerr << "Error: Receipt number cannot be empty!" << endl;
-        exit(EXIT_FAILURE);
-    }
-    receiptNumber = number;
+Receipt::Receipt(string num, string d, string t) : Array(), receiptNumber(num), date(d), time(t) {}
+
+Receipt::Receipt(string num, string d, string t, int size, const Goods& initVal)
+    : Array(size, initVal), receiptNumber(num), date(d), time(t) {
 }
 
-void Receipt::setDateTime(const string& dt) {
-    if (dt.empty()) {
-        cerr << "Error: Date/Time cannot be empty!" << endl;
-        exit(EXIT_FAILURE);
+void Receipt::setReceiptNumber(string num) {
+    if (num.empty()) {
+        cerr << "Error: Receipt number cannot be empty!" << endl;
+        exit(1);
     }
-    dateTime = dt;
+    receiptNumber = num;
+}
+
+void Receipt::setDate(string d) {
+    if (d.empty()) {
+        cerr << "Error: Date cannot be empty!" << endl;
+        exit(1);
+    }
+    date = d;
+}
+
+void Receipt::setTime(string t) {
+    if (t.empty()) {
+        cerr << "Error: Time cannot be empty!" << endl;
+        exit(1);
+    }
+    time = t;
 }
 
 void Receipt::addGoods(const Goods& g) {
     if (count >= MAX_SIZE) {
-        cerr << "Error: Receipt is full (MAX_SIZE reached)!" << endl;
-        exit(EXIT_FAILURE);
+        cerr << "Error: Receipt is full!" << endl;
+        exit(1);
     }
-    arr[count++] = g;
+    elements[count] = g;
+    count++;
 }
 
-void Receipt::removeGoods(const string& code) {
-    int index = -1;
-    for (int i = 0; i < count; ++i) {
-        if (arr[i].getCode() == code) {
-            index = i;
-            break;
-        }
-    }
-    if (index == -1) {
-        cerr << "Error during deletion: Product with code " << code << " not found!" << endl;
-        exit(EXIT_FAILURE);
-    }
+void Receipt::changeGoods(int index, const Goods& g) {
+    rangeCheck(index);
+    elements[index] = g;
+}
+
+void Receipt::deleteGoods(int index) {
+    rangeCheck(index);
     for (int i = index; i < count - 1; ++i) {
-        arr[i] = arr[i + 1];
+        elements[i] = elements[i + 1];
     }
     count--;
 }
 
-void Receipt::modifyGoods(const string& code, const Goods& newGoods) {
+Goods Receipt::searchByCode(string c) const {
     for (int i = 0; i < count; ++i) {
-        if (arr[i].getCode() == code) {
-            arr[i] = newGoods;
-            return;
+        if (elements[i].getCode() == c) {
+            return elements[i];
         }
     }
-    cerr << "Error during modification: Product with code " << code << " not found!" << endl;
-    exit(EXIT_FAILURE);
+    cerr << "Error: Goods not found!" << endl;
+    exit(1);
 }
 
-Goods Receipt::searchGoods(const string& code) const {
+double Receipt::calculateTotalSum() const {
+    double total = 0.0;
     for (int i = 0; i < count; ++i) {
-        if (arr[i].getCode() == code) {
-            return arr[i];
-        }
-    }
-    cerr << "Search error: Product with code " << code << " not found!" << endl;
-    exit(EXIT_FAILURE);
-    return Goods();
-}
-
-double Receipt::getTotalSum() const {
-    double total = 0;
-    for (int i = 0; i < count; ++i) {
-        total += arr[i].calculateSum();
+        total += elements[i].calculateTotal();
     }
     return total;
 }
 
-Receipt::operator string() const {
-    ostringstream oss;
-    oss << "=== Receipt No. " << receiptNumber << " ===" << endl;
-    oss << "Date and time: " << dateTime << endl;
-    oss << "-------------------------------------" << endl;
-    for (int i = 0; i < count; ++i) {
-        oss << string(arr[i]) << endl;
+Receipt& Receipt::operator=(const Receipt& other) {
+    if (this != &other) {
+        receiptNumber = other.receiptNumber;
+        date = other.date;
+        time = other.time;
+        count = other.count;
+        for (int i = 0; i < count; ++i) {
+            elements[i] = other.elements[i];
+        }
     }
-    oss << "-------------------------------------" << endl;
-    oss << "Total receipt sum: " << getTotalSum() << endl;
-    oss << "=====================================";
-    return oss.str();
+    return *this;
 }
 
-istream& operator>>(istream& is, Receipt& r) {
-    string num, dt;
-    int itemsCount;
-    cout << "Enter receipt number: ";
-    is >> num;
+istream& operator>>(istream& in, Receipt& r) {
+    string num, d, t;
+    in >> num >> d >> t;
     r.setReceiptNumber(num);
-    cout << "Enter date and time (no spaces, e.g. 12.05.2023_14:00): ";
-    is >> dt;
-    r.setDateTime(dt);
+    r.setDate(d);
+    r.setTime(t);
 
-    cout << "How many products to add? ";
-    is >> itemsCount;
-    if (itemsCount < 0) {
-        cerr << "Error: Invalid number of products!" << endl;
-        exit(EXIT_FAILURE);
+    int itemsCount;
+    in >> itemsCount;
+    if (itemsCount < 0 || itemsCount > r.MAX_SIZE) {
+        cerr << "Error: Invalid items count!" << endl;
+        exit(1);
     }
-
     r.count = 0;
     for (int i = 0; i < itemsCount; ++i) {
         Goods g;
-        is >> g;
+        in >> g;
         r.addGoods(g);
     }
-    return is;
+    return in;
 }
 
-ostream& operator<<(ostream& os, const Receipt& r) {
-    os << string(r);
-    return os;
+ostream& operator<<(ostream& out, const Receipt& r) {
+    out << "Receipt: " << r.receiptNumber << " Date: " << r.date << " Time: " << r.time << "" << endl;
+    for (int i = 0; i < r.count; ++i) {
+        out << "- " << string(r.elements[i]) << "" << endl;
+    }
+    out << "Total Sum: " << r.calculateTotalSum() << "" << endl;
+    return out;
 }
